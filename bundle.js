@@ -3072,6 +3072,7 @@ var trim = require('lodash/string/trim');
 var startsWith = require('lodash/string/startsWith');
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 var onClickOutside = require('react-onclickoutside');
 var classNames = require('classnames');
 var countryData = require('./country_data');
@@ -3162,7 +3163,7 @@ var ReactTelephoneInput = React.createClass({
     componentDidMount: function componentDidMount() {
         document.addEventListener('keydown', this.handleKeydown);
 
-        this._cursorToEnd();
+        this._cursorToEnd(true);
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(this.state.formattedNumber);
         }
@@ -3175,7 +3176,7 @@ var ReactTelephoneInput = React.createClass({
             return;
         }
 
-        var container = this.refs.flagDropdownList.getDOMNode();
+        var container = ReactDOM.findDOMNode(this.refs.flagDropdownList);
 
         if (!container) {
             return;
@@ -3242,12 +3243,17 @@ var ReactTelephoneInput = React.createClass({
     },
 
     // put the cursor to the end of the input (usually after a focus event)
-    _cursorToEnd: function _cursorToEnd() {
-        var input = this.refs.numberInput.getDOMNode();
-        input.focus();
-        if (isModernBrowser) {
-            var len = input.value.length;
-            input.setSelectionRange(len, len);
+    _cursorToEnd: function _cursorToEnd(skipFocus) {
+        var input = ReactDOM.findDOMNode(this.refs.numberInput);
+        if (skipFocus) {
+            this.handleInputFocus();
+        } else {
+            input.focus();
+
+            if (isModernBrowser) {
+                var len = input.value.length;
+                input.setSelectionRange(len, len);
+            }
         }
     },
     // memoize results based on the first 5/6 characters. That is all that matters
@@ -3277,7 +3283,7 @@ var ReactTelephoneInput = React.createClass({
         return bestGuess;
     }),
     getElement: function getElement(index) {
-        return this.refs['flag_no_' + index].getDOMNode();
+        return ReactDOM.findDOMNode(this.refs['flag_no_' + index]);
     },
     handleFlagDropdownClick: function handleFlagDropdownClick() {
         var _this = this;
@@ -3340,7 +3346,7 @@ var ReactTelephoneInput = React.createClass({
                 }
 
                 if (caretPosition > 0 && oldFormattedText.length >= formattedNumber.length) {
-                    this.refs.numberInput.getDOMNode().setSelectionRange(caretPosition, caretPosition);
+                    ReactDOM.findDOMNode(this.refs.numberInput).setSelectionRange(caretPosition, caretPosition);
                 }
             }
 
@@ -3377,7 +3383,7 @@ var ReactTelephoneInput = React.createClass({
     },
     handleInputFocus: function handleInputFocus() {
         // if the input is blank, insert dial code of the selected country
-        if (this.refs.numberInput.getDOMNode().value === '+') {
+        if (ReactDOM.findDOMNode(this.refs.numberInput).value === '+') {
             this.setState({ formattedNumber: '+' + this.state.selectedCountry.dialCode });
         }
     },
@@ -3538,4 +3544,4 @@ var ReactTelephoneInput = React.createClass({
 
 module.exports = ReactTelephoneInput;
 
-},{"../less/default.less":1,"./country_data":88,"classnames":undefined,"lodash/array/findIndex":5,"lodash/array/first":6,"lodash/array/rest":8,"lodash/collection/any":9,"lodash/collection/filter":10,"lodash/collection/findWhere":12,"lodash/collection/map":13,"lodash/collection/reduce":14,"lodash/collection/some":15,"lodash/function/debounce":17,"lodash/function/memoize":18,"lodash/string/startsWith":84,"lodash/string/trim":85,"react":undefined,"react-onclickoutside":undefined}]},{},[]);
+},{"../less/default.less":1,"./country_data":88,"classnames":undefined,"lodash/array/findIndex":5,"lodash/array/first":6,"lodash/array/rest":8,"lodash/collection/any":9,"lodash/collection/filter":10,"lodash/collection/findWhere":12,"lodash/collection/map":13,"lodash/collection/reduce":14,"lodash/collection/some":15,"lodash/function/debounce":17,"lodash/function/memoize":18,"lodash/string/startsWith":84,"lodash/string/trim":85,"react":undefined,"react-dom":undefined,"react-onclickoutside":undefined}]},{},[]);
